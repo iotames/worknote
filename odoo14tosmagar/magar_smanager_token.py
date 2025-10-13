@@ -2,6 +2,7 @@ import requests
 import json
 import time
 import logging
+import requests  # 添加缺失的import
 from get_conf import Config
 
 # 配置日志
