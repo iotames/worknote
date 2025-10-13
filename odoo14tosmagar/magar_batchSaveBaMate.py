@@ -1,21 +1,30 @@
 import requests
 import json
 import time
+import logging
 from get_conf import Config
 from magar_smanager_token import MES_Get_token
 from odoo_db_con import PostgreSQLConnector
 
+# 配置日志
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+# 常量定义
+TIME_INTERVAL = '2 HOURS'
+QUERY_LIMIT = 500
+API_ENDPOINT = '/yzApi/batchSaveBaMate'
 
 # todo : 读取配置文件中的smanager_token , 如果不存在或者已过期, 则获取新的token
 def main():
-    
+    str_token = ""
     try:
-        # mes 配置
+        # 读取配置
         config = Config()
         baseURL = config.baseURL
-        appkey = config.appkey
-        appSecret = config.appSecret
-        # postgresql 配置
+        str_token = config.token
+        
+        # 数据库配置
         host = config.host
         port = config.port
         database = config.database
@@ -23,93 +32,114 @@ def main():
         password = config.password
         
     except FileNotFoundError as e:
-        print(f"错误: {e}")
-    
-    # 获取mes接口token
-    token = MES_Get_token(baseURL, appkey, appSecret)
-    str_token = token.get_token()
-
-    db = PostgreSQLConnector(host, port, database, username, password)
-    print("\n开始查询物料资料: ")
-    query = """
-                SELECT  a.id as material_id, a.code, a.name, a.create_date , 
-                        case when b.code = 'B' then '1' else '2' end as matetype , 
-                        case when a.active then '1' else '0' end as state , 
-                        c.name as unit ,
-                        a.composition ,
-                        d.code as categorycode,
-                        d.name as categoryname , 
-                        e.code as supplier_code,
-                        e.name as supplier_name
-                FROM    public.ziyi_base_material a inner join 
-                        public.ziyi_base_material_type b on b.id = a.type_id inner join 
-                        public.ziyi_base_unit c on c.id = a.unit_id inner join 
-                        public.ziyi_base_mat_category_first d on d.id = a.first_id left join 
-                        public.ziyi_base_partner e on e.id = a.supplier_id
-                WHERE   --a.company_id = 2
-                        --AND 
-                        a.write_date > CURRENT_TIMESTAMP - INTERVAL '6 HOURS' LIMIT 500
-    """
-    results = db.execute_query(query)
-    if not results:
-        print("没有物料资料")
+        logger.error(f"配置文件错误: {e}")
         return
-    list_value = []
-    for res in results:
-        # 查询物料明细表, 获取规格和颜色
-        query_detail = """
-                            select  distinct  e.name as model_name, f.name as color_name, f.code as color_code
-                            from    ziyi_base_material_details e inner join 
-                                    ziyi_base_color f on f.id = e.color_id  
-                            where  e.material_id = %s
-                        """
-        results_detail = db.execute_query(query_detail, (res['material_id'],))
-        modelList = []
-        colorList = []
-        orderId_model = 1
-        orderId_color = 1
-        for res_detail in results_detail:
-            if res_detail['model_name'] not in [item['model'] for item in modelList]:
-                modelList.append({
-                    "model": res_detail['model_name'],
-                    "orderId": orderId_model
-                })
-                orderId_model += 1
-            if res_detail['color_code'] not in [item['colorCode'] for item in colorList]:
-                colorList.append({
-                    "colorCode": res_detail['color_code'],
-                    "colorName": res_detail['color_name'],
-                    "orderId": orderId_color
-                })
-                orderId_color += 1
-
-        json = {
-            'code': res['code'] or res['name'],
-            'name': res['name'],
-            'createTime': res['create_date'].strftime('%Y-%m-%d %H:%M:%S'),
-            'mateType': res['matetype'],
-            'state': res['state'],
-            'categoryCode': res['categorycode'],
-            'categoryName': res['categoryname'],
-            'unit': res['unit'],
-            'element': res['composition'],
-            'providerCode': res['supplier_code'] ,
-            'providerName': res['supplier_name'] ,
-            "modelList": modelList,
-            "colorList": colorList,
-        }
-        print(json)
-        list_value.append(json)
+    except Exception as e:
+        logger.error(f"读取配置时发生错误: {e}")
+        return
         
-    # 写入mes接口
-    url = Config().baseURL + "/yzApi/batchSaveBaMate"
-    headers = {
-        "Content-Type": "application/json",
-        "smagar-token": str_token
-    }
-    print(f"url: {url}")
-    response = requests.post(url, headers=headers, json=list_value)
-    print(response.json())
+    if not str_token:
+        logger.error("错误: token 为空")
+        return
+        
+    # 获取数据库连接
+    try:
+        db = PostgreSQLConnector(host, port, database, username, password)
+        logger.info("开始查询物料资料")
+        
+        # 构造查询语句
+        query = f"""
+                    SELECT  a.id as material_id, a.code, a.name, a.create_date , 
+                            case when b.code = 'B' then '1' else '2' end as matetype , 
+                            case when a.active then '1' else '0' end as state , 
+                            c.name as unit ,
+                            a.composition ,
+                            d.code as categorycode,
+                            d.name as categoryname , 
+                            e.code as supplier_code,
+                            e.name as supplier_name
+                    FROM    public.ziyi_base_material a inner join 
+                            public.ziyi_base_material_type b on b.id = a.type_id inner join 
+                            public.ziyi_base_unit c on c.id = a.unit_id inner join 
+                            public.ziyi_base_mat_category_first d on d.id = a.first_id left join 
+                            public.ziyi_base_partner e on e.id = a.supplier_id
+                    WHERE   a.write_date > CURRENT_TIMESTAMP - INTERVAL '{TIME_INTERVAL}' LIMIT {QUERY_LIMIT}
+        """
+        
+        results = db.execute_query(query)
+        
+        if not results:
+            logger.info("没有物料资料")
+            return
+        
+        list_value = []
+        for res in results:
+            # 查询物料明细表, 获取规格和颜色
+            query_detail = """
+                                select  distinct  e.name as model_name, f.name as color_name, f.code as color_code
+                                from    ziyi_base_material_details e inner join 
+                                        ziyi_base_color f on f.id = e.color_id  
+                                where  e.material_id = %s
+                            """
+            results_detail = db.execute_query(query_detail, (res['material_id'],))
+            modelList = []
+            colorList = []
+            orderId_model = 1
+            orderId_color = 1
+            for res_detail in results_detail:
+                if res_detail['model_name'] not in [item['model'] for item in modelList]:
+                    modelList.append({
+                        "model": res_detail['model_name'],
+                        "orderId": orderId_model
+                    })
+                    orderId_model += 1
+                if res_detail['color_code'] not in [item['colorCode'] for item in colorList]:
+                    colorList.append({
+                        "colorCode": res_detail['color_code'],
+                        "colorName": res_detail['color_name'],
+                        "orderId": orderId_color
+                    })
+                    orderId_color += 1
+
+            # 使用material_data代替json变量名
+            material_data = {
+                'code': res['code'] or res['name'],
+                'name': res['name'],
+                'createTime': res['create_date'].strftime('%Y-%m-%d %H:%M:%S'),
+                'mateType': res['matetype'],
+                'state': res['state'],
+                'categoryCode': res['categorycode'],
+                'categoryName': res['categoryname'],
+                'unit': res['unit'],
+                'element': res['composition'],
+                'providerCode': res['supplier_code'] ,
+                'providerName': res['supplier_name'] ,
+                "modelList": modelList,
+                "colorList": colorList,
+            }
+            logger.debug(f"准备的物料数据: {material_data}")
+            list_value.append(material_data)
+            
+        logger.info(f"共准备 {len(list_value)} 条物料数据")
+        
+        # 写入mes接口
+        url = baseURL + API_ENDPOINT
+        headers = {
+            "Content-Type": "application/json",
+            "smagar-token": str_token
+        }
+        
+        logger.info("开始写入物料资料到MES系统")
+        response = requests.post(url, headers=headers, json=list_value, timeout=60)
+        response.raise_for_status()  # 检查HTTP错误
+        
+        logger.info(f"API响应: {response.json()}")
+        logger.info("物料资料写入完成")
+        
+    except requests.exceptions.RequestException as e:
+        logger.error(f"API请求失败: {e}")
+    except Exception as e:
+        logger.error(f"执行过程中发生错误: {e}")
 
 
 if __name__ == "__main__":

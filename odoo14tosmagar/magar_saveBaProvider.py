@@ -1,12 +1,12 @@
-import requests
 import json
+import requests  # 添加这一行
 from get_conf import Config
 from odoo_db_con import PostgreSQLConnector
 import logging
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("magar_saveBaProvider")
 
 # 常量定义
 COMPANY_ID = 2
@@ -89,9 +89,9 @@ def main():
         }
         
         logger.info("开始写入供应商资料到MES系统")
-        response = requests.post(url, headers=headers, json=list_value, timeout=30)
+        response = requests.post(url, headers=headers, json=list_value, timeout=60)
         response.raise_for_status()  # 检查HTTP错误
-        
+
         logger.info(f"API响应: {response.json()}")
         logger.info("供应商资料写入完成")
         

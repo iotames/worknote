@@ -1,18 +1,18 @@
-import requests
 import json
 import time
 import logging
+import requests
 from get_conf import Config
 from magar_smanager_token import MES_Get_token
 from odoo_db_con import PostgreSQLConnector
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("magar_saveBaCustomer")
 
 # 常量定义
 COMPANY_ID = 2
-TIME_INTERVAL = '6 HOURS'
+TIME_INTERVAL = '2 HOURS'
 QUERY_LIMIT = 500
 API_ENDPOINT = '/yzApi/saveBaCustomer'
 
@@ -26,8 +26,7 @@ def main():
         # 读取配置信息
         config = Config()
         baseURL = config.baseURL
-        appkey = config.appkey
-        appSecret = config.appSecret
+        str_token = config.token
         
         # 数据库配置
         host = config.host
@@ -38,7 +37,6 @@ def main():
         
         logger.info("配置信息加载成功")
         logger.debug(f"baseURL: {baseURL}")
-        logger.debug(f"appkey: {appkey}")
         # 注意：不要在日志中记录敏感信息如appSecret
         
     except FileNotFoundError as e:
@@ -47,16 +45,12 @@ def main():
     except Exception as e:
         logger.error(f"读取配置信息时发生错误: {e}")
         return
+    
+    if not str_token:
+        logger.error("无法获取有效的token，无法继续操作")
+        return
         
     try:
-        # 获取MES接口token
-        token_client = MES_Get_token(baseURL, appkey, appSecret)
-        str_token = token_client.get_token()
-        
-        if not str_token:
-            logger.error("无法获取有效的token，无法继续操作")
-            return
-            
         # 连接数据库并查询客户资料
         db = PostgreSQLConnector(host, port, database, username, password)
         logger.info("开始查询客户资料")
@@ -107,27 +101,14 @@ def main():
         
         logger.info(f"开始写入客户资料到MES系统，API地址: {url}")
         
-        # 添加超时设置，防止请求无限等待
-        response = requests.post(
-            url,
-            headers=headers,
-            json=list_value,
-            timeout=60  # 设置60秒超时
-        )
+        response = requests.post(url, headers=headers, json=list_value, timeout=60)  # 设置60秒超时
+        response.raise_for_status() # 检查HTTP响应状态
         
-        # 检查HTTP响应状态
-        response.raise_for_status()
-        
-        # 处理API响应
-        try:
-            response_data = response.json()
-            logger.info(f"API调用成功，响应: {response_data}")
-        except json.JSONDecodeError as e:
-            logger.error(f"API响应解析失败: {e}")
-            logger.error(f"原始响应内容: {response.text}")
+        logger.info(f"API响应: {response.json()}")
+        logger.info("客户资料写入完成")
             
     except requests.exceptions.RequestException as e:
-        logger.error(f"API调用失败: {e}")
+        logger.error(f"API请求失败: {e}")
     except Exception as e:
         logger.error(f"处理过程中发生错误: {e}")
 
