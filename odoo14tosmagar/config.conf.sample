@@ -1,0 +1,14 @@
+[MES]
+baseurl = https://xxxxx.com/smagar
+appkey = abc@xx.com
+appsecret = xxxxxxxxxxxxxxxx
+
+[PostgreSQL]
+database = postgres
+host = 127.0.0.1
+port = 5432
+username = postgres
+password = postgres
+
+[Token]
+token = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

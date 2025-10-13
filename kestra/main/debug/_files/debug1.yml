@@ -1,0 +1,7 @@
+id: debug_1
+namespace: debug
+
+tasks:
+  - id: hello_debug_1
+    type: io.kestra.plugin.core.log.Log
+    message: ---Hello World---debug1---! 🚀

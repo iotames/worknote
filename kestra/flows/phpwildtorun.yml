@@ -1,0 +1,40 @@
+id: phpwildtorun
+namespace: wildto
+inputs:
+  - type: SELECT
+    id: work_path
+    defaults: /www/wwwtest/wildto_ci
+    values:
+      - /www/wwwtest/wildto_ci
+      - /www/wwwtest/wildto_zend
+      - /www/wwwroot/wildto_ci
+      - /www/wwwroot/wildto_zend
+      - /www/wwwroot/wildto_symfony
+      - /www/wwwroot/wildto_new
+    required: true
+    displayName: 操作的项目
+  - type: SELECT
+    id: run_opt
+    defaults: update
+    values:
+      - update
+    required: true
+    displayName: 操作类型
+
+tasks:
+  - id: login_ssh
+    type: io.kestra.plugin.fs.ssh.Command
+    logLevel: DEBUG
+    host: "{{envs.wildto_host}}"
+    password: "{{envs.wildto_ssh_password}}"
+    username: "{{envs.wildto_ssh_user}}"
+    port: "{{envs.wildto_ssh_port}}"
+    commands:
+      - pwd
+      - |
+        PROJECT_DIR={{ inputs['work_path'] }}
+        echo "PROJECT_DIR=$PROJECT_DIR"
+        cd ${PROJECT_DIR}/
+      - git pull
+      - git status
+      - git log --max-count=1

@@ -1,0 +1,79 @@
+id: phperprun
+namespace: phperp
+inputs:
+  - type: SELECT
+    id: run_domain
+    defaults: staging.erp.santic.com
+    values:
+      - staging.erp.santic.com
+      - test.erp.santic.com
+      - uat.erp.santic.com
+      - erp.santic.com
+    required: true
+    displayName: 操作的域名
+  - id: node_type
+    type: SELECT
+    defaults: server
+    values:
+      - server
+      - client
+    displayName: 选择前端(client)后端(server)
+  - type: STRING
+    id: GIT_VERSION
+    required: false
+  - type: STRING
+    id: XCX_VERSION
+    required: false
+  - type: SELECT
+    id: run_opt
+    defaults: update
+    values:
+      - update
+    required: true
+    displayName: 操作类型
+
+tasks:
+  - id: login_ssh
+    type: io.kestra.plugin.fs.ssh.Command
+    logLevel: DEBUG
+    host: "{{envs.erp_host}}"
+    password: "{{envs.erp_ssh_password}}"
+    username: "{{envs.erp_ssh_user}}"
+    port: "{{envs.erp_ssh_port}}"
+    commands:
+      - pwd
+      - |
+        echo "select domain: {{ inputs['run_domain'] }}"
+        GIT_VERSION={{ inputs['GIT_VERSION'] }}
+        XCX_VERSION={{ inputs['XCX_VERSION'] }}
+        if [ "{{ inputs['run_domain'] }}" = "erp.santic.com" ]; then
+            PROJECT_DIR=/home/wwwroot/{{ inputs['run_domain'] }}
+            ENV_FILE=${PROJECT_DIR}/.env
+            echo "BEGIN PROD DOMAIN: {{ inputs['node_type'] }}"
+        else
+            PROJECT_DIR=/home/wwwtest/{{ inputs['run_domain'] }}
+            ENV_FILE=${PROJECT_DIR}/.env
+            echo "BEGIN TEST DOMAIN: {{ inputs['node_type'] }}"   
+        fi
+        echo "PROJECT_DIR=$PROJECT_DIR, ENV_FILE=$ENV_FILE"
+        if [ "{{ inputs['node_type'] }}" = "server" ]; then
+            cd ${PROJECT_DIR}/ && git pull
+        fi
+        if [ "{{ inputs['node_type'] }}" = "client" ]; then
+            cd ${PROJECT_DIR}/public && git pull
+        fi
+        if [ -n "$ENV_FILE" ]; then
+            echo "ENV_FILE=$ENV_FILE, GIT_VERSION=$GIT_VERSION, XCX_VERSION=$XCX_VERSION"
+            if [ -n "$GIT_VERSION" ]; then
+                vline=$(cat $ENV_FILE | grep GIT_VERSION)
+                new_vline="GIT_VERSION=$GIT_VERSION"
+                echo "----vline($vline)---new_line($new_vline)-------"
+                sed "s/$vline/$new_vline/" $ENV_FILE >> sed.log && sed -i "s/$vline/$new_vline/" $ENV_FILE
+            fi
+            if [ -n "$XCX_VERSION" ]; then
+                vline=$(cat $ENV_FILE | grep XCX_VERSION)
+                new_vline="XCX_VERSION=$XCX_VERSION"
+                echo "----vline($vline)---new_line($new_vline)-------"
+                sed "s/$vline/$new_vline/" $ENV_FILE >> sed.log && sed -i "s/$vline/$new_vline/" $ENV_FILE
+            fi
+        fi

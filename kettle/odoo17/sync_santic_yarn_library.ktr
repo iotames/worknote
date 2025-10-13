@@ -1,0 +1,841 @@
+<transformation>
+  <info>
+    <name>sync_santic_yarn_library</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+    <trans_type>Normal</trans_type>
+    <directory>/odoo17</directory>
+    <parameters>
+    </parameters>
+    <log>
+      <trans-log-table>
+        <connection/>
+        <schema/>
+        <table/>
+        <size_limit_lines/>
+        <interval/>
+        <timeout_days/>
+        <field>
+          <id>ID_BATCH</id>
+          <enabled>Y</enabled>
+          <name>ID_BATCH</name>
+        </field>
+        <field>
+          <id>CHANNEL_ID</id>
+          <enabled>Y</enabled>
+          <name>CHANNEL_ID</name>
+        </field>
+        <field>
+          <id>TRANSNAME</id>
+          <enabled>Y</enabled>
+          <name>TRANSNAME</name>
+        </field>
+        <field>
+          <id>STATUS</id>
+          <enabled>Y</enabled>
+          <name>STATUS</name>
+        </field>
+        <field>
+          <id>LINES_READ</id>
+          <enabled>Y</enabled>
+          <name>LINES_READ</name>
+          <subject/>
+        </field>
+        <field>
+          <id>LINES_WRITTEN</id>
+          <enabled>Y</enabled>
+          <name>LINES_WRITTEN</name>
+          <subject/>
+        </field>
+        <field>
+          <id>LINES_UPDATED</id>
+          <enabled>Y</enabled>
+          <name>LINES_UPDATED</name>
+          <subject/>
+        </field>
+        <field>
+          <id>LINES_INPUT</id>
+          <enabled>Y</enabled>
+          <name>LINES_INPUT</name>
+          <subject/>
+        </field>
+        <field>
+          <id>LINES_OUTPUT</id>
+          <enabled>Y</enabled>
+          <name>LINES_OUTPUT</name>
+          <subject/>
+        </field>
+        <field>
+          <id>LINES_REJECTED</id>
+          <enabled>Y</enabled>
+          <name>LINES_REJECTED</name>
+          <subject/>
+        </field>
+        <field>
+          <id>ERRORS</id>
+          <enabled>Y</enabled>
+          <name>ERRORS</name>
+        </field>
+        <field>
+          <id>STARTDATE</id>
+          <enabled>Y</enabled>
+          <name>STARTDATE</name>
+        </field>
+        <field>
+          <id>ENDDATE</id>
+          <enabled>Y</enabled>
+          <name>ENDDATE</name>
+        </field>
+        <field>
+          <id>LOGDATE</id>
+          <enabled>Y</enabled>
+          <name>LOGDATE</name>
+        </field>
+        <field>
+          <id>DEPDATE</id>
+          <enabled>Y</enabled>
+          <name>DEPDATE</name>
+        </field>
+        <field>
+          <id>REPLAYDATE</id>
+          <enabled>Y</enabled>
+          <name>REPLAYDATE</name>
+        </field>
+        <field>
+          <id>LOG_FIELD</id>
+          <enabled>Y</enabled>
+          <name>LOG_FIELD</name>
+        </field>
+        <field>
+          <id>EXECUTING_SERVER</id>
+          <enabled>N</enabled>
+          <name>EXECUTING_SERVER</name>
+        </field>
+        <field>
+          <id>EXECUTING_USER</id>
+          <enabled>N</enabled>
+          <name>EXECUTING_USER</name>
+        </field>
+        <field>
+          <id>CLIENT</id>
+          <enabled>N</enabled>
+          <name>CLIENT</name>
+        </field>
+      </trans-log-table>
+      <perf-log-table>
+        <connection/>
+        <schema/>
+        <table/>
+        <interval/>
+        <timeout_days/>
+        <field>
+          <id>ID_BATCH</id>
+          <enabled>Y</enabled>
+          <name>ID_BATCH</name>
+        </field>
+        <field>
+          <id>SEQ_NR</id>
+          <enabled>Y</enabled>
+          <name>SEQ_NR</name>
+        </field>
+        <field>
+          <id>LOGDATE</id>
+          <enabled>Y</enabled>
+          <name>LOGDATE</name>
+        </field>
+        <field>
+          <id>TRANSNAME</id>
+          <enabled>Y</enabled>
+          <name>TRANSNAME</name>
+        </field>
+        <field>
+          <id>STEPNAME</id>
+          <enabled>Y</enabled>
+          <name>STEPNAME</name>
+        </field>
+        <field>
+          <id>STEP_COPY</id>
+          <enabled>Y</enabled>
+          <name>STEP_COPY</name>
+        </field>
+        <field>
+          <id>LINES_READ</id>
+          <enabled>Y</enabled>
+          <name>LINES_READ</name>
+        </field>
+        <field>
+          <id>LINES_WRITTEN</id>
+          <enabled>Y</enabled>
+          <name>LINES_WRITTEN</name>
+        </field>
+        <field>
+          <id>LINES_UPDATED</id>
+          <enabled>Y</enabled>
+          <name>LINES_UPDATED</name>
+        </field>
+        <field>
+          <id>LINES_INPUT</id>
+          <enabled>Y</enabled>
+          <name>LINES_INPUT</name>
+        </field>
+        <field>
+          <id>LINES_OUTPUT</id>
+          <enabled>Y</enabled>
+          <name>LINES_OUTPUT</name>
+        </field>
+        <field>
+          <id>LINES_REJECTED</id>
+          <enabled>Y</enabled>
+          <name>LINES_REJECTED</name>
+        </field>
+        <field>
+          <id>ERRORS</id>
+          <enabled>Y</enabled>
+          <name>ERRORS</name>
+        </field>
+        <field>
+          <id>INPUT_BUFFER_ROWS</id>
+          <enabled>Y</enabled>
+          <name>INPUT_BUFFER_ROWS</name>
+        </field>
+        <field>
+          <id>OUTPUT_BUFFER_ROWS</id>
+          <enabled>Y</enabled>
+          <name>OUTPUT_BUFFER_ROWS</name>
+        </field>
+      </perf-log-table>
+      <channel-log-table>
+        <connection/>
+        <schema/>
+        <table/>
+        <timeout_days/>
+        <field>
+          <id>ID_BATCH</id>
+          <enabled>Y</enabled>
+          <name>ID_BATCH</name>
+        </field>
+        <field>
+          <id>CHANNEL_ID</id>
+          <enabled>Y</enabled>
+          <name>CHANNEL_ID</name>
+        </field>
+        <field>
+          <id>LOG_DATE</id>
+          <enabled>Y</enabled>
+          <name>LOG_DATE</name>
+        </field>
+        <field>
+          <id>LOGGING_OBJECT_TYPE</id>
+          <enabled>Y</enabled>
+          <name>LOGGING_OBJECT_TYPE</name>
+        </field>
+        <field>
+          <id>OBJECT_NAME</id>
+          <enabled>Y</enabled>
+          <name>OBJECT_NAME</name>
+        </field>
+        <field>
+          <id>OBJECT_COPY</id>
+          <enabled>Y</enabled>
+          <name>OBJECT_COPY</name>
+        </field>
+        <field>
+          <id>REPOSITORY_DIRECTORY</id>
+          <enabled>Y</enabled>
+          <name>REPOSITORY_DIRECTORY</name>
+        </field>
+        <field>
+          <id>FILENAME</id>
+          <enabled>Y</enabled>
+          <name>FILENAME</name>
+        </field>
+        <field>
+          <id>OBJECT_ID</id>
+          <enabled>Y</enabled>
+          <name>OBJECT_ID</name>
+        </field>
+        <field>
+          <id>OBJECT_REVISION</id>
+          <enabled>Y</enabled>
+          <name>OBJECT_REVISION</name>
+        </field>
+        <field>
+          <id>PARENT_CHANNEL_ID</id>
+          <enabled>Y</enabled>
+          <name>PARENT_CHANNEL_ID</name>
+        </field>
+        <field>
+          <id>ROOT_CHANNEL_ID</id>
+          <enabled>Y</enabled>
+          <name>ROOT_CHANNEL_ID</name>
+        </field>
+      </channel-log-table>
+      <step-log-table>
+        <connection/>
+        <schema/>
+        <table/>
+        <timeout_days/>
+        <field>
+          <id>ID_BATCH</id>
+          <enabled>Y</enabled>
+          <name>ID_BATCH</name>
+        </field>
+        <field>
+          <id>CHANNEL_ID</id>
+          <enabled>Y</enabled>
+          <name>CHANNEL_ID</name>
+        </field>
+        <field>
+          <id>LOG_DATE</id>
+          <enabled>Y</enabled>
+          <name>LOG_DATE</name>
+        </field>
+        <field>
+          <id>TRANSNAME</id>
+          <enabled>Y</enabled>
+          <name>TRANSNAME</name>
+        </field>
+        <field>
+          <id>STEPNAME</id>
+          <enabled>Y</enabled>
+          <name>STEPNAME</name>
+        </field>
+        <field>
+          <id>STEP_COPY</id>
+          <enabled>Y</enabled>
+          <name>STEP_COPY</name>
+        </field>
+        <field>
+          <id>LINES_READ</id>
+          <enabled>Y</enabled>
+          <name>LINES_READ</name>
+        </field>
+        <field>
+          <id>LINES_WRITTEN</id>
+          <enabled>Y</enabled>
+          <name>LINES_WRITTEN</name>
+        </field>
+        <field>
+          <id>LINES_UPDATED</id>
+          <enabled>Y</enabled>
+          <name>LINES_UPDATED</name>
+        </field>
+        <field>
+          <id>LINES_INPUT</id>
+          <enabled>Y</enabled>
+          <name>LINES_INPUT</name>
+        </field>
+        <field>
+          <id>LINES_OUTPUT</id>
+          <enabled>Y</enabled>
+          <name>LINES_OUTPUT</name>
+        </field>
+        <field>
+          <id>LINES_REJECTED</id>
+          <enabled>Y</enabled>
+          <name>LINES_REJECTED</name>
+        </field>
+        <field>
+          <id>ERRORS</id>
+          <enabled>Y</enabled>
+          <name>ERRORS</name>
+        </field>
+        <field>
+          <id>LOG_FIELD</id>
+          <enabled>N</enabled>
+          <name>LOG_FIELD</name>
+        </field>
+      </step-log-table>
+      <metrics-log-table>
+        <connection/>
+        <schema/>
+        <table/>
+        <timeout_days/>
+        <field>
+          <id>ID_BATCH</id>
+          <enabled>Y</enabled>
+          <name>ID_BATCH</name>
+        </field>
+        <field>
+          <id>CHANNEL_ID</id>
+          <enabled>Y</enabled>
+          <name>CHANNEL_ID</name>
+        </field>
+        <field>
+          <id>LOG_DATE</id>
+          <enabled>Y</enabled>
+          <name>LOG_DATE</name>
+        </field>
+        <field>
+          <id>METRICS_DATE</id>
+          <enabled>Y</enabled>
+          <name>METRICS_DATE</name>
+        </field>
+        <field>
+          <id>METRICS_CODE</id>
+          <enabled>Y</enabled>
+          <name>METRICS_CODE</name>
+        </field>
+        <field>
+          <id>METRICS_DESCRIPTION</id>
+          <enabled>Y</enabled>
+          <name>METRICS_DESCRIPTION</name>
+        </field>
+        <field>
+          <id>METRICS_SUBJECT</id>
+          <enabled>Y</enabled>
+          <name>METRICS_SUBJECT</name>
+        </field>
+        <field>
+          <id>METRICS_TYPE</id>
+          <enabled>Y</enabled>
+          <name>METRICS_TYPE</name>
+        </field>
+        <field>
+          <id>METRICS_VALUE</id>
+          <enabled>Y</enabled>
+          <name>METRICS_VALUE</name>
+        </field>
+      </metrics-log-table>
+    </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+    </maxdate>
+    <size_rowset>10000</size_rowset>
+    <sleep_time_empty>50</sleep_time_empty>
+    <sleep_time_full>50</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>50000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
+    <capture_step_performance>N</capture_step_performance>
+    <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <step_performance_capturing_size_limit>100</step_performance_capturing_size_limit>
+    <dependencies>
+    </dependencies>
+    <partitionschemas>
+    </partitionschemas>
+    <slaveservers>
+    </slaveservers>
+    <clusterschemas>
+    </clusterschemas>
+    <created_user>-</created_user>
+    <created_date>2025/08/07 13:46:49.705</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2025/08/08 16:31:06.286</modified_date>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
+    <is_key_private>N</is_key_private>
+  </info>
+  <notepads>
+  </notepads>
+  <connection>
+    <name>ERPodoo</name>
+    <server>${pg_odoo_erp_dbhost}</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>${pg_odoo_erp_dbname}</database>
+    <port>${pg_odoo_erp_dbport}</port>
+    <username>${pg_odoo_erp_dbuser}</username>
+    <password>${pg_odoo_erp_dbpwd}</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>IS_CLUSTERED</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>PORT_NUMBER</code>
+        <attribute>${pg_odoo_erp_dbport}</attribute>
+      </attribute>
+      <attribute>
+        <code>PRESERVE_RESERVED_WORD_CASE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>QUOTE_ALL_FIELDS</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>USE_POOLING</code>
+        <attribute>N</attribute>
+      </attribute>
+    </attributes>
+  </connection>
+  <order>
+  </order>
+  <step>
+    <name>执行SQL脚本</name>
+    <type>ExecSQL</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>ERPodoo</connection>
+    <execute_each_row>N</execute_each_row>
+    <single_statement>Y</single_statement>
+    <replace_variables>N</replace_variables>
+    <quoteString>N</quoteString>
+    <sql>-- 检查并添加 origin_id
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'santic_yarn_library' 
+        AND column_name = 'origin_id'
+    ) THEN
+        EXECUTE 'ALTER TABLE public.santic_yarn_library ADD COLUMN origin_id INTEGER';
+    END IF;
+	IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'santic_material_composition' 
+        AND column_name = 'origin_id'
+    ) THEN
+        EXECUTE 'ALTER TABLE public.santic_material_composition ADD COLUMN origin_id INTEGER';
+    END IF;
+	IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'santic_yarn_price' 
+        AND column_name = 'origin_id'
+    ) THEN
+        EXECUTE 'ALTER TABLE public.santic_yarn_price ADD COLUMN origin_id INTEGER';
+    END IF;
+END $$;
+
+-- 不存在的记录写入到santc_yarn_library
+INSERT INTO public.santic_yarn_library(origin_id ,technical_code , yarn_type, color_of_yarn, green_properties_verified, functional_material,
+        fiber_brand, fiber_supplier, remark ,
+        fiber_structure, after_treatment_method, iustre, cross_section_shape , special_fiber , quality_of_yarn, 
+        spinning_method, twist_tpi, twist_direction , name_of_fancy_yarn, composite_method,
+        create_date, write_date, active , create_uid, write_uid ,
+        value, yarn_count_unit, f_number , ply_number , coding, tec_seq, yarn_count, status )
+select  ta.origin_id , ta.technical_code , tb.id as yarn_type, tc.id as color_of_yarn , td.id as green_properties_verified, te.id as functional_material , 
+        ta.fiber_brand , ta.fiber_supplier , cast(jsonb_build_object('zh_CN', ta.remark, 'en_US', ta.remark)::TEXT AS JSONB)  AS remark,
+        ta.fiber_structure ,
+        tf.id as after_treatment_method , tg.id as iustre , th.id as cross_section_shape, ti.id as special_fiber, tj.id as quality_of_yarn, 
+        tk.id as spinning_method, tl.id as twist_tpi , tm.id as twist_direction , tn.id as name_of_fancy_yarn , tp.id as composite_method ,
+        --ta.s_blended_yarn_count , 
+        ta.create_date , ta.write_date , ta.active , ta.create_uid , write_uid ,
+        ta.s_yarn_count_value as value , tq.id as yarn_count_unit, case when ta.yarn_type = 'L' then ta.s_yarn_count_unit_f else null end as f_number , 
+        ta.s_yarn_count_count as ply_number , ta.s_num_prefix as coding, ta.s_num_suffix as tec_seq , ta.s_yarn_count_text as yarn_count , 'draft' as status
+from    (
+            select  a.s_yarn_store_id as origin_id , s_yarn_code as technical_code ,
+                    b.s_code as yarn_type , c.s_code as color_of_yarn , d.s_code as green_properties_verified ,
+                    e.s_name as functional_material,
+                    a.s_fiber_brand as fiber_brand,
+                    a.s_fiber_supplier as fiber_supplier ,
+                    a.s_remark as remark,
+                    a.s_filament_fiber_structure as fiber_structure , --长丝纤维结构
+                    f.s_code as after_treatment_method , --长丝后处理方法
+                    g.s_code as iustre ,  -- 长丝纱纱型-光泽
+                    h.s_code as cross_section_shape ,  --'长丝纱纱型-横截面形状',
+                    COALESCE (i.s_name,n.s_name,p.s_name) as special_fiber , -- '特殊纤维ID',
+                    j.s_code as quality_of_yarn , -- '短纤纱纱型-纱线质量ID',
+                    k.s_code as spinning_method , -- '短纤纱纱型-纺纱方式ID',
+                    l.s_code as twist_tpi ,-- '短纤纱纱型-捻度ID',
+                    m.s_code as twist_direction ,--  '短纤纱纱型-捻向ID',
+                    o.s_code as name_of_fancy_yarn , -- '花式纱纱型-花式纱名称ID',
+                    q.s_code as composite_method ,--  '复合纱型-复合方法ID',
+                    --a.s_blended_yarn_count , --  '复合纱型-纱支',
+                    a.s_create_time as create_date,
+                    a.s_update_time as write_date,
+                    case when a.is_delete = 0 then true else false end as active ,
+                    1 as create_uid ,-- '创建人', 管理员
+                    1 as write_uid , 
+                    a.s_yarn_count_value ,--  '纱支-数值',
+                    r.s_name as yarn_count_unit ,-- '纱支-单位',
+                    a.s_yarn_count_unit_f ,-- '纱支-F数',
+                    a.s_yarn_count_count ,--  '纱支-股数',
+                    a.s_num_prefix ,--  '编号规则前缀',
+                    a.s_num_suffix ,--  '编号规则后缀',
+                    a.s_yarn_count_text -- '纱支拼接文本(用来搜索)'
+            from    ods.ods_php_erp_erp_material_price_yarn_store a LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree b ON b.s_tree_id = a.s_yarn_type_id LEFT JOIN
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree c ON c.s_tree_id = a.s_yarn_color_id LEFT JOIN
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree d ON d.s_tree_id = a.s_green_components_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree e on e.s_tree_id = a.s_functional_materials_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree f on f.s_tree_id = a.s_filament_staple_processing_method_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree g ON g.s_tree_id = a.s_filament_lustre_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree h ON h.s_tree_id = a.s_filament_cross_sectional_shape_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree i ON i.s_tree_id = a.s_staple_special_fiber_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree j ON j.s_tree_id = a.s_staple_yarn_quality_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree k ON k.s_tree_id = a.s_staple_spinning_method_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree l ON l.s_tree_id = a.s_staple_twist_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree m ON m.s_tree_id = a.s_staple_twist_direction_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree n ON n.s_tree_id = a.s_fancy_special_fiber_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree o ON o.s_tree_id = a.s_fancy_yarn_name_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree p ON p.s_tree_id = a.s_blended_special_fiber_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree q ON q.s_tree_id = a.s_blended_method_id LEFT JOIN 
+                    ods.ods_php_erp_erp_material_price_yarn_store_tree r ON r.s_tree_id = a.s_yarn_count_unit_id --LEFT JOIN 
+                    --public.hr_employee s ON s.origin_id = a.s_manager_id --LEFT JOIN 
+                    --ods.ods_php_erp_erp_material_price_yarn_store_tree t on t.s_tree_id = a.s_yarn_functionality_id
+            where   NOT EXISTS( SELECT 1  FROM  santic_yarn_library as yarn_lib WHERE yarn_lib.origin_id = a.s_yarn_store_id )
+            ) ta left join 
+        (
+            select  a.id , a.mnemonic_code
+                    --(a.name::json->>'zh_CN') as yarn_type
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'yarn_type'
+        ) tb on tb.mnemonic_code = ta.yarn_type left join 
+        (
+            select  a.code as color_of_yarn , a.id , b.yarn_type 
+            from    public.santic_yarn_color_detail a inner join 
+                    public.santic_yarn_color b on b.id = a.yarn_color_id 
+        ) tc on tc.color_of_yarn = ta.color_of_yarn and tc.yarn_type = tb.id left join 
+        (
+            select  a.id , a.mnemonic_code
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'green_properties_verified'
+        ) td on td.mnemonic_code = ta.green_properties_verified left join 
+        (
+            select  a.id , 
+                    (a.name::json->>'zh_CN') as functional_material
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'functional_material'
+        ) te on te.functional_material = ta.functional_material left join 
+        (
+            select  a.id , a.mnemonic_code 
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'after_treatment_method'
+        ) tf on tf.mnemonic_code = ta.after_treatment_method left join 
+        (
+            select  a.id , a.mnemonic_code 
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'iustre'
+        ) tg on tg.mnemonic_code = ta.iustre left join 
+        (
+            select  a.id , a.mnemonic_code 
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'cross_section'
+        ) th on th.mnemonic_code = ta.cross_section_shape left join 
+        (
+            select  a.id , case when (a.name::json->>'zh_CN') = '银离子' then 'Ag+' else (a.name::json->>'zh_CN') end as special_fiber 
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'special_fiber'
+        ) ti on ti.special_fiber = ta.special_fiber LEFT JOIN
+        (
+            select  a.id , a.mnemonic_code  
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'quality_of_yarn'
+        ) tj on tj.mnemonic_code = ta.quality_of_yarn LEFT JOIN
+        (
+            select  a.id , a.mnemonic_code  
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'spinning_method'
+        ) tk ON tk.mnemonic_code = ta.spinning_method LEFT JOIN
+        (
+            select  a.id , a.mnemonic_code  
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'twist_tpi'
+        ) tl ON tl.mnemonic_code = ta.twist_tpi LEFT JOIN
+        (
+            select  a.id , a.mnemonic_code  
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'twist_direction'
+        ) tm ON tm.mnemonic_code = ta.twist_direction LEFT JOIN
+        (
+            select  a.id , a.mnemonic_code  
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'name_of_fancy_yarn'
+        ) tn on tn.mnemonic_code = ta.name_of_fancy_yarn LEFT JOIN
+        (
+            select  a.id , a.mnemonic_code  
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'composed_method'
+        ) tp ON tp.mnemonic_code = ta.composite_method LEFT JOIN 
+        (
+            select  a.id , a.mnemonic_code  , a.code 
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'yarn_count_unit'
+        ) tq ON tq.code = ta.yarn_count_unit ;
+
+-- 写入不存在的纱线成分
+INSERT INTO public.santic_material_composition(fiber, proportion, yarn_library_id, origin_id)
+select  c.id as fiber , a.s_ratio * 0.01 as proportion, d.id as yarn_library_id, a.s_component_id
+from    ods.ods_php_erp_erp_material_price_yarn_store_component a INNER join 
+        ods.ods_php_erp_erp_material_price_yarn_store_tree b on b.s_tree_id = a.s_tree_id LEFT JOIN
+        (
+            select  a.id , a.mnemonic_code --, a.name 
+                    --(a.name::json->>'zh_CN') as yarn_type
+            from    public.santic_basedata_dict_detail a inner join 
+                    public.santic_basedata_dict b on b.id = a.dict_id
+            where   b.code = 'fiber'
+        ) c ON c.mnemonic_code = b.s_code LEFT JOIN
+        public.santic_yarn_library d on d.origin_id = a.s_yarn_store_id
+WHERE   not EXISTS( select 1 from public.santic_material_composition as smc where smc.origin_id = a.s_component_id );
+
+-- 更新纱线库的成分编码
+-- 第一步：创建临时表存储结果
+CREATE TEMP TABLE temp_top_materials AS
+WITH ranked_compositions AS (
+    SELECT 
+            aa.yarn_library_id,
+            bb.mnemonic_code,
+            aa.proportion,
+            ROW_NUMBER() OVER (
+                PARTITION BY aa.yarn_library_id 
+                ORDER BY aa.proportion DESC
+            ) AS rank
+    FROM    santic_material_composition aa
+            INNER JOIN santic_basedata_dict_detail bb ON bb.id = aa.fiber
+    WHERE   yarn_library_id IS NOT NULL
+)
+SELECT 
+        yarn_library_id,
+        STRING_AGG(mnemonic_code, '' ORDER BY proportion DESC) AS material_codes
+FROM ranked_compositions
+WHERE rank &lt;= 2
+GROUP BY yarn_library_id;
+
+-- 第二步：执行更新
+UPDATE  santic_yarn_library syl
+SET     composition_code = ttm.material_codes
+FROM    temp_top_materials ttm
+WHERE   syl.id = ttm.yarn_library_id;
+
+-- 第三步：清理临时表（可选）
+DROP TABLE temp_top_materials;
+
+-- 写入不存在的纱价
+INSERT INTO public.santic_yarn_price(inquiry_date, price, yarn_library_id, origin_id)
+select  a.s_inquiry_date as inquiry_date , a.s_price as price, d.id as yarn_library_id, a.s_yarn_price_id
+from    ods.ods_php_erp_erp_material_price_yarn_store_yarn_price a INNER join 
+        public.santic_yarn_library d on d.origin_id = a.s_yarn_store_id
+WHERE   s_price is not NULL AND not EXISTS( select 1 from public.santic_yarn_price as yarn_price where yarn_price.origin_id = a.s_yarn_price_id );
+
+-- 更新纱线单据流水号
+update 	santic_yarn_library as syl
+set 	yarn_code = t.yarn_code
+from 	(
+			select  'SX'||LPAD(cast(row_number() over(order by a.id asc) + (
+                select  
+                    max(cast(substring(yarn_code from 3) as integer) ) as max_sequence
+                    --, *
+                from	santic_yarn_library a 
+                where 	a.yarn_code is not null and a.yarn_code like 'SX%') as text)::TEXT, 5, '0') as yarn_code ,
+              a.id
+			from	santic_yarn_library a 
+      WHERE   a.yarn_code is null
+		) t
+where 	t.id = syl.id;
+
+-- 更新ir.sequence的下一个值 创建临时函数处理序列查询和更新
+CREATE OR REPLACE FUNCTION manage_sequence(
+    p_code TEXT, 
+    p_new_next_val INTEGER DEFAULT NULL,
+    OUT seq_id INTEGER,
+    OUT seq_code TEXT,
+    OUT seq_name TEXT,
+    OUT current_next INTEGER,
+    OUT pg_sequence_name TEXT
+) AS $$
+BEGIN
+    -- 查询序列信息
+    SELECT id, code, name, number_next 
+    INTO seq_id, seq_code, seq_name, current_next
+    FROM ir_sequence 
+    WHERE code = p_code;
+    
+    -- 获取PostgreSQL序列名称
+    IF seq_id IS NOT NULL THEN
+        SELECT relname INTO pg_sequence_name
+        FROM pg_class 
+        WHERE relkind = 'S' 
+        AND relname LIKE 'ir_sequence%' 
+        AND relname LIKE '%' || seq_id || '%'
+        LIMIT 1;
+        
+        -- 如果提供了新值，则更新序列
+        IF p_new_next_val IS NOT NULL THEN
+            EXECUTE format('ALTER SEQUENCE %I RESTART WITH %s', pg_sequence_name, p_new_next_val);
+            UPDATE ir_sequence SET number_next = p_new_next_val WHERE id = seq_id;
+            current_next := p_new_next_val;
+        END IF;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 使用示例2：查询并更新下一个值
+SELECT * FROM manage_sequence(
+    p_code := 'santic.yarn.library', 
+    p_new_next_val := (select  
+		                    max(cast(substring(yarn_code from 3) as integer) ) + 1 as max_sequence 
+		                    --, *
+		                from	santic_yarn_library a 
+		                where 	a.yarn_code is not null and a.yarn_code like 'SX%')
+);
+
+-- 删除函数（如需清理）
+DROP FUNCTION IF EXISTS manage_sequence(TEXT, INTEGER);
+
+-- TODO: update 内容
+</sql>
+    <set_params>N</set_params>
+    <insert_field/>
+    <update_field/>
+    <delete_field/>
+    <read_field/>
+    <arguments>
+    </arguments>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>128</xloc>
+      <yloc>96</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step_error_handling>
+  </step_error_handling>
+  <slave-step-copy-partition-distribution>
+  </slave-step-copy-partition-distribution>
+  <slave_transformation>N</slave_transformation>
+  <attributes/>
+</transformation>

@@ -1,0 +1,49 @@
+services:
+  web:
+    image: ${DOCKER_IMAGE_ODOO}
+    networks:
+      - odoonetwork
+    # network_mode: host
+    container_name: ${DOCKER_NAME_ODOO}
+    depends_on:
+      - db
+    ports:
+      - "${ODOO_WEB_PORT}:8069"
+    volumes:
+      - ${ODOO_DATA}:/var/lib/odoo
+      - ${ODOO_CONFIG}:/etc/odoo
+      - ${ODOO_ADDONS}:/mnt/extra-addons
+      - ${ODOO_LOG}:/var/log/odoo
+    environment:
+      - USER=${DB_USER}
+      - PASSWORD=${DB_PASSWORD}
+    #  - HOST=db
+    #  - PORT=5432
+    #  - DB_NAME=odoo17
+    # 覆盖默认启动命令，支持​​多参数组合​​和​​环境变量动态注入​​
+    # 注意：使用​ ​command​ ​​时，​ ​entrypoint​ ​会被忽略
+    command:
+      - -u
+      - ${ODOO_UPDATE_MODULES}
+      - --without-demo=all
+      - --log-level=info
+    restart: always  # 自动重启配置
+
+  db:
+    image: $DOCKER_IMAGE_DB
+    networks:
+      - odoonetwork
+    container_name: $DOCKER_NAME_DB
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - $PG_DATA_DIR:/var/lib/postgresql/data
+    restart: always
+
+networks:
+  odoonetwork:
+    driver: bridge

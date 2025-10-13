@@ -1,0 +1,45 @@
+# networks:
+#   nocobase:
+#     driver: bridge
+
+services:
+  nocobase:
+    # 初始化账号和密码是 admin@nocobase.com 和 admin123
+    image: registry.cn-shanghai.aliyuncs.com/nocobase/nocobase:1.6.37
+    network_mode: host
+    container_name: nocobase
+    restart: always
+    # 如果要使用bridge网络，请取消下面的注释
+    # networks:
+    #   - nocobase
+    # depends_on:
+    #   - postgres
+    environment:
+      # 应用的密钥，用于生成用户 token 等
+      # 如果 APP_KEY 修改了，旧的 token 也会随之失效
+      # 可以是任意随机字符串，并确保不对外泄露
+      - APP_KEY=your-secret-key
+      # 数据库类型，支持 postgres, mysql, mariadb, sqlite
+      - DB_DIALECT=postgres
+      # 数据库主机，可以替换为已有的数据库服务器 IP
+      - DB_HOST=127.0.0.1
+      # Database port
+      - DB_PORT=5433
+      # 数据库名
+      - DB_DATABASE=odoo
+      # 数据库用户
+      - DB_USER=odoo
+      # 数据库密码
+      - DB_PASSWORD=odoo
+      - DB_SCHEMA=usercenter
+      # 时区
+      - TZ=Asia/Shanghai
+      # 商业插件，使用 service platform 的账号信息
+      - NOCOBASE_PKG_USERNAME=
+      - NOCOBASE_PKG_PASSWORD=
+
+    volumes:
+      - ./nocobase:/app/nocobase
+    ports:
+      - '13000:80'
+    # init: true

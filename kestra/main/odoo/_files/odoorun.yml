@@ -1,0 +1,17 @@
+id: odoorun
+namespace: odoo
+inputs:
+  - type: SELECT
+    id: run_opt
+    displayName: 选择操作类型
+    values: ["update", "restart"]
+    required: true
+
+tasks:
+  - id: remote_opt
+    type: io.kestra.plugin.fs.ssh.Command
+    commands:
+      - cd {{envs.odoo_erp_path}} && ./update.sh {{ inputs['run_opt'] }} && echo "$(date '+%Y-%m-%d_%H:%M')---(./update.sh {{ inputs['run_opt'] }})---" >> kestra.log
+    host: "{{envs.odoo_ssh_host}}"
+    username: "{{envs.odoo_ssh_user}}"
+    password: "{{envs.odoo_ssh_password}}"

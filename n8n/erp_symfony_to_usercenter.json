@@ -1,0 +1,602 @@
+{
+  "name": "erp_symfony_to_usercenter",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  s_manager_id,\n  s_created_time,\n  s_updated_time,\n  s_deleted_time,\n  s_account,\n  s_talent_id,\n  ta.s_email,\n  ta.s_employee_num,\n  ta.s_name,\n  ta.s_depart,\n  s_password,\n  s_cellphone,\n  s_activate_flag,\n  s_unionid,\n  s_openid,\n  dd_depart_ids,\n  s_lead_flag,\n  s_time_zone\nFROM s_manager left join erp_talent_archives ta on ta.s_talent_archives_id=s_talent_id\nWHERE s_employee_num IS NOT NULL\nAND s_activate_flag=1\nAND s_account<>'骆大春(旧)'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -60,
+        720
+      ],
+      "id": "515bcc99-28e7-4948-a722-2fe43cf13b8a",
+      "name": "找出有工号的用户",
+      "credentials": {
+        "mySql": {
+          "id": "meVDvTcKJPMxqKM7",
+          "name": "SanticSymfonyERP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- 只展示未被删除且上级部门也未被删除的部门\nSELECT \n  curr.dd_id,\n  curr.dd_name,\n  curr.s_en_name,\n  curr.s_jp_name,\n  curr.dd_parent_id,\n  curr.dd_created_time,\n  curr.dd_updated_time,\n  curr.dd_deleted_time,\n  curr.sort\nFROM s_depart curr\nLEFT JOIN s_depart parent \n  ON curr.dd_parent_id = parent.dd_id  -- 连接上级部门\nWHERE \n  curr.dd_deleted_time IS NULL          -- 当前部门未删除\n  AND (\n    curr.dd_parent_id IS NULL         -- 情况1: 顶级部门(无上级)\n    OR \n    parent.dd_deleted_time IS NULL    -- 情况2: 有上级且上级未删除\n  );",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -60,
+        460
+      ],
+      "id": "4204f22a-3a5f-4e1c-9fdb-3421052d7297",
+      "name": "找出所有部门",
+      "credentials": {
+        "mySql": {
+          "id": "meVDvTcKJPMxqKM7",
+          "name": "SanticSymfonyERP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "departments",
+          "mode": "list",
+          "cachedResultName": "departments"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sort": "={{ $json.sort }}",
+            "originId": "={{ $json.dd_id }}",
+            "createdAt": "={{\n$json.dd_created_time || $now\n}}",
+            "updatedAt": "={{ $now }}",
+            "title": "={{ $json.dd_name }}",
+            "originParentId": "={{ $json.dd_parent_id }}",
+            "isLeaf": false
+          },
+          "matchingColumns": [
+            "originId"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "createdAt",
+              "displayName": "createdAt",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "updatedAt",
+              "displayName": "updatedAt",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "isLeaf",
+              "displayName": "isLeaf",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "parentId",
+              "displayName": "parentId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "sort",
+              "displayName": "sort",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "createdById",
+              "displayName": "createdById",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "updatedById",
+              "displayName": "updatedById",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "originId",
+              "displayName": "originId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "originParentId",
+              "displayName": "originParentId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        160,
+        460
+      ],
+      "id": "d1283149-881c-41f4-8cec-34095d7b63c5",
+      "name": "部门数据更新",
+      "credentials": {
+        "postgres": {
+          "id": "uOg2nC0LLtFkXsqX",
+          "name": "SanticUserCenter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "updatedById": 0,
+            "createdById": 0,
+            "sort": 0,
+            "passwordChangeTz": 0,
+            "createdAt": "={{ $json.s_created_time || $now }}",
+            "updatedAt": "={{ $json.s_updated_time || $now }}",
+            "nickname": "={{ $json.s_account }}",
+            "phone": "={{ $json.s_cellphone }}",
+            "password": "={{ $json.s_password }}",
+            "status": "={{ $json.s_activate_flag }}",
+            "originId": "={{ $json.s_manager_id }}",
+            "email": "={{ $json.s_email || NULL }}",
+            "username": "={{ $json.s_employee_num }}",
+            "originDepartmentId": "={{ $json.dd_depart_ids }}"
+          },
+          "matchingColumns": [
+            "originId"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "createdAt",
+              "displayName": "createdAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "updatedAt",
+              "displayName": "updatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "nickname",
+              "displayName": "nickname",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "password",
+              "displayName": "password",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "passwordChangeTz",
+              "displayName": "passwordChangeTz",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "appLang",
+              "displayName": "appLang",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "resetToken",
+              "displayName": "resetToken",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "systemSettings",
+              "displayName": "systemSettings",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "sort",
+              "displayName": "sort",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "createdById",
+              "displayName": "createdById",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "updatedById",
+              "displayName": "updatedById",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "originId",
+              "displayName": "originId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "originDepartmentId",
+              "displayName": "originDepartmentId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        160,
+        720
+      ],
+      "id": "7ce0955b-3e6d-45b6-a206-2b2a90d53ed3",
+      "name": "用户数据更新",
+      "credentials": {
+        "postgres": {
+          "id": "uOg2nC0LLtFkXsqX",
+          "name": "SanticUserCenter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE public.departments A\nSET \"parentId\" = B.id,\n    \"updatedAt\" = CURRENT_TIMESTAMP\nFROM public.departments B\nWHERE A.\"parentId\" IS NULL \n  AND A.\"originParentId\" IS NOT NULL \n  AND B.\"originId\" = A.\"originParentId\";\n\nUPDATE public.departments A\nSET \"isLeaf\" = TRUE,\n    \"updatedAt\" = CURRENT_TIMESTAMP\nWHERE NOT EXISTS (\n    SELECT 1 FROM public.departments C\n    WHERE C.\"parentId\" = A.id\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        380,
+        460
+      ],
+      "id": "6985f71f-d340-45dc-bf7b-85fa8c27136a",
+      "name": "更新parentId和isLeaft",
+      "credentials": {
+        "postgres": {
+          "id": "uOg2nC0LLtFkXsqX",
+          "name": "SanticUserCenter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO public.\"departmentsUsers\" (\n    \"departmentId\", \n    \"userId\", \n    \"isMain\", \n    \"createdAt\", \n    \"updatedAt\"\n)\nSELECT \n    d.id AS \"departmentId\", \n    u.id AS \"userId\", \n    true AS \"isMain\", \n    CURRENT_TIMESTAMP AS \"createdAt\", \n    CURRENT_TIMESTAMP AS \"updatedAt\"\nFROM public.users u\nJOIN public.departments d ON u.\"originDepartmentId\" = d.\"originId\"\nON CONFLICT (\"departmentId\", \"userId\") \nDO UPDATE SET \n    \"isMain\" = EXCLUDED.\"isMain\",\n    \"updatedAt\" = EXCLUDED.\"updatedAt\"",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        380,
+        720
+      ],
+      "id": "12071121-a1e4-48f8-b7d0-59dd5b05e402",
+      "name": "更新部门用户关系表",
+      "credentials": {
+        "postgres": {
+          "id": "uOg2nC0LLtFkXsqX",
+          "name": "SanticUserCenter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -280,
+        720
+      ],
+      "id": "f731bf54-780f-4509-ada4-8ad1894271a2",
+      "name": "同步用户数据"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -280,
+        460
+      ],
+      "id": "855436c4-97fa-41c9-81d6-b5a45570174e",
+      "name": "同步部门基础表"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "找出有工号的用户": {
+      "main": [
+        [
+          {
+            "node": "用户数据更新",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "找出所有部门": {
+      "main": [
+        [
+          {
+            "node": "部门数据更新",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "部门数据更新": {
+      "main": [
+        [
+          {
+            "node": "更新parentId和isLeaft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "更新parentId和isLeaft": {
+      "main": [
+        []
+      ]
+    },
+    "用户数据更新": {
+      "main": [
+        [
+          {
+            "node": "更新部门用户关系表",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "同步部门基础表": {
+      "main": [
+        [
+          {
+            "node": "找出所有部门",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "同步用户数据": {
+      "main": [
+        [
+          {
+            "node": "找出有工号的用户",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6b38da15-8d1f-4f75-a03d-01c4a2e731f8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "966e6f46f6d372b813a3af86f3869e9ed599668fde8c988d33d5d9d745052fb2"
+  },
+  "id": "q0IJUuiAWgtadtvG",
+  "tags": []
+}

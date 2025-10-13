@@ -1,0 +1,1 @@
+注：所有的sizecode都填的是sizename , 因为odoo sizecode 不是必填，MES必须要有sizecode , 为了统一方便管理，改用sizename。
