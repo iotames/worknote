@@ -1,24 +1,18 @@
 import requests
 import logging
 from get_conf import Config
-from magar_smanager_token import MES_Get_token
-from odoo_db_con import PostgreSQLConnector
+from odoo_db_con import get_db_connection
 from funcs import get_product_bom, extract_single_weight
 
 # 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("magar_saveApsOrder.log"),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("magar_saveApsOrder")
 
-# API请求超时设置
-API_TIMEOUT = 60
-
+# 常量定义
+TIME_INTERVAL = '6 HOURS'
+QUERY_LIMIT = 50
+API_ENDPOINT = '/yzApi/saveApsOrder'
+API_ENDPOINT_BOMS = '/yzApi/saveApsOrderBoms'
 
 def main():
     try:
@@ -26,13 +20,7 @@ def main():
         config = Config()
         baseURL = config.baseURL
         str_token = config.token
-
-        # postgresql 配置
-        host = config.host
-        port = config.port
-        database = config.database
-        username = config.username
-        password = config.password
+        TIME_INTERVAL = config.timeinterval
         
     except FileNotFoundError as e:
         logger.error(f"错误: {e}")
@@ -40,10 +28,10 @@ def main():
     except Exception as e:
         logger.error(f"配置加载错误: {e}")
         return
-    
-    db = PostgreSQLConnector(host, port, database, username, password)
+
+    db = get_db_connection(config)  
     logger.info("开始查询订单")
-    query = '''
+    query = f"""
                 select  a.contract_no , b.code as cuscode , b.name as cusname , a.create_date , 
                         d.design_no as itemcode , d.id as product_id , c.id as order_line_id , 
                         f.login as creater , 
@@ -58,10 +46,10 @@ def main():
                             from	public.ziyi_sale_order_line_batch
                             group by line_id 
                         ) as g on g.line_id = c.id
-                where   c.write_date > CURRENT_TIMESTAMP - INTERVAL '3 HOURS'
+                where   c.write_date > CURRENT_TIMESTAMP - INTERVAL '{TIME_INTERVAL}' 
                 order by a.id asc
-                limit 50
-            '''
+                limit {QUERY_LIMIT}
+            """
 
     try:
         results = db.execute_query(query)
@@ -201,7 +189,7 @@ def main():
                         'colorCode': res_bom_color['colorcode'] ,
                         'colorName': res_bom_color['colorname'] ,
                         'model'	: bom_size_value,   # 物料规格	
-                        'price'	: str(res_bom['price']),   # 单价	
+                        'price'	: float(str(res_bom['price'])),   # 单价	
                         'wastRate':	0, # 损耗率	
                         'sizeQty' :	0, # 用量	
                         'remark'  :	'', # 备注	
@@ -227,7 +215,7 @@ def main():
                                 "colorCode": res_bom_color['colorcode'] ,
                                 "colorName": res_bom_color['colorname'] ,
                                 "model": color_price['name'] , # 物料规格
-                                "price": str(color_price['price'])
+                                "price": float(str(color_price['price'])),
                             }
                             matecolorpricelist.append(color_price_json)
                     except Exception as e:
@@ -243,7 +231,7 @@ def main():
                                 'mateSource': res_bom['matesource'] ,   # 物料来源
                                 'providerCode': res_bom['supplier_code'], # 供应商编码
                                 'providerName': res_bom['supplier_name'], # 供应商名称
-                                'price': str(res_bom['price']),              # 单价
+                                'price': float(str(res_bom['price'])),              # 单价
                                 'element': res_bom['composition'],      # 成分
                                 'wastRate': 0,                          # 损耗率 成衣损耗  默认0
                                 'unit': res_bom['unit'] or res_bom['mate_unit'],  # 物料转换单位
@@ -251,7 +239,7 @@ def main():
                                 'weight': weight,                       # 克重数值
                                 'part': res_bom['part'],                # 部位
                                 'mateSource': res_bom['matesource'] ,   # 物料来源
-                                'termType': 1,                          # 期限类型
+                                'termType': 1,                          # 期限类型： 1 前期物料；2 中期物料；3 后期物料
                                 'remarks': res_bom['memo'] ,
                                 'mateColorList': matecolorlist,
                                 'mateSizeList': matesizelist,
@@ -280,9 +268,9 @@ def main():
             continue
     
     # 写入mes接口  生产订单
-    url = f"{Config().baseURL}/yzApi/saveApsOrder"
+    url = baseURL + API_ENDPOINT
     # 写入mes接口
-    url_bom = f"{Config().baseURL}/yzApi/saveApsOrderBoms"
+    url_bom = baseURL + API_ENDPOINT_BOMS
 
     headers = {
         "Content-Type": "application/json",
@@ -293,7 +281,7 @@ def main():
     if list_value:
         try:
             logger.info(f"发送生产订单数据到: {url}")
-            response = requests.post(url, headers=headers, json=list_value, timeout=API_TIMEOUT)
+            response = requests.post(url, headers=headers, json=list_value, timeout=60)
             response.raise_for_status()
             logger.info(f"生产订单发送成功: {response.json()}")
             
@@ -304,7 +292,7 @@ def main():
         for j in range(len(list_bom_value)):
             try:
                 logger.info(f"发送BOM数据: {list_bom_value[j]['orderNo']}")
-                response_bom = requests.post(url_bom, headers=headers, json=list_bom_value[j], timeout=API_TIMEOUT)
+                response_bom = requests.post(url_bom, headers=headers, json=list_bom_value[j], timeout=60)
                 response_bom.raise_for_status()
                 logger.info(f"BOM发送成功: {response_bom.json()}")
             except Exception as e:

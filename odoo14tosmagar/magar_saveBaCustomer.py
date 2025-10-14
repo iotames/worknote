@@ -1,17 +1,14 @@
-import json
 import time
 import logging
 import requests
 from get_conf import Config
-from magar_smanager_token import MES_Get_token
-from odoo_db_con import PostgreSQLConnector
+from odoo_db_con import get_db_connection
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("magar_saveBaCustomer")
 
 # 常量定义
-COMPANY_ID = 2
 TIME_INTERVAL = '2 HOURS'
 QUERY_LIMIT = 500
 API_ENDPOINT = '/yzApi/saveBaCustomer'
@@ -21,23 +18,16 @@ def main():
     """主函数，从Odoo数据库查询客户资料并写入MES系统"""
     config = None
     str_token = None
-    
+    db = None  # 初始化db变量
     try:
         # 读取配置信息
         config = Config()
         baseURL = config.baseURL
         str_token = config.token
-        
-        # 数据库配置
-        host = config.host
-        port = config.port
-        database = config.database
-        username = config.username
-        password = config.password
+        TIME_INTERVAL = config.timeinterval
         
         logger.info("配置信息加载成功")
         logger.debug(f"baseURL: {baseURL}")
-        # 注意：不要在日志中记录敏感信息如appSecret
         
     except FileNotFoundError as e:
         logger.error(f"配置文件错误: {e}")
@@ -52,17 +42,16 @@ def main():
         
     try:
         # 连接数据库并查询客户资料
-        db = PostgreSQLConnector(host, port, database, username, password)
+        db = get_db_connection(config)  
         logger.info("开始查询客户资料")
         
         # 构造查询语句
         query = f"""
-            SELECT code, name, short_name, memo, phone, address 
-            FROM public.ziyi_base_partner 
-            WHERE company_id = {COMPANY_ID} 
-              AND (customer = true OR brand = true)
-              AND write_date > CURRENT_TIMESTAMP - INTERVAL '{TIME_INTERVAL}' 
-            LIMIT {QUERY_LIMIT}
+            SELECT  code, name, short_name, memo, phone, address 
+            FROM    public.ziyi_base_partner 
+            WHERE   (customer = true OR brand = true)
+                    AND write_date > CURRENT_TIMESTAMP - INTERVAL '{TIME_INTERVAL}' 
+            LIMIT   {QUERY_LIMIT}
         """
         
         results = db.execute_query(query)
@@ -100,7 +89,7 @@ def main():
         }
         
         logger.info(f"开始写入客户资料到MES系统，API地址: {url}")
-        
+        logger.info(f"发送客户数据: {list_value}")
         response = requests.post(url, headers=headers, json=list_value, timeout=60)  # 设置60秒超时
         response.raise_for_status() # 检查HTTP响应状态
         
@@ -111,7 +100,13 @@ def main():
         logger.error(f"API请求失败: {e}")
     except Exception as e:
         logger.error(f"处理过程中发生错误: {e}")
-
+    finally:
+        # 确保数据库连接关闭
+        if db:
+            try:
+                db.close()
+            except Exception as e:
+                logger.error(f"关闭数据库连接时发生错误: {e}")
 
 if __name__ == "__main__":
     main()

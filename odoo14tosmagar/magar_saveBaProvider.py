@@ -1,7 +1,7 @@
 import json
 import requests  # 添加这一行
 from get_conf import Config
-from odoo_db_con import PostgreSQLConnector
+from odoo_db_con import get_db_connection
 import logging
 
 # 配置日志
@@ -9,7 +9,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger("magar_saveBaProvider")
 
 # 常量定义
-COMPANY_ID = 2
 TIME_INTERVAL = '2 HOURS'
 QUERY_LIMIT = 500
 API_ENDPOINT = '/yzApi/saveBaProvider'
@@ -17,18 +16,13 @@ API_ENDPOINT = '/yzApi/saveBaProvider'
 # todo : 读取配置文件中的smanager_token , 如果不存在或者已过期, 则获取新的token
 def main():
     str_token = ""
+    db = None  # 初始化db变量
     try:
         # 读取配置
         config = Config()
         baseURL = config.baseURL
         str_token = config.token
-        
-        # 数据库配置
-        host = config.host
-        port = config.port
-        database = config.database
-        username = config.username
-        password = config.password
+        TIME_INTERVAL = config.timeinterval
         
     except FileNotFoundError as e:
         logger.error(f"配置文件错误: {e}")
@@ -43,18 +37,21 @@ def main():
         
     # 获取数据库连接
     try:
-        db = PostgreSQLConnector(host, port, database, username, password)
+        db = get_db_connection(config)  
         logger.info("开始查询供应商资料")
         
         # 构造查询语句
         query = f"""
-            SELECT code, name, short_name, memo, phone, address, 
-                   CASE WHEN supplier_material = true THEN '3' ELSE '4' END as providertype, 
-                   represent
-            FROM public.ziyi_base_partner 
-            WHERE company_id = {COMPANY_ID} 
-              AND (supplier_material = true OR supplier_processing = true OR supplier_service = true)
-              AND write_date > CURRENT_TIMESTAMP - INTERVAL '{TIME_INTERVAL}' 
+            SELECT  code, name, short_name, memo, phone, address, 
+                    CASE WHEN supplier_material = true THEN '3' ELSE '4' END as providertype, 
+                    represent
+            FROM    public.ziyi_base_partner 
+            WHERE   (
+                        supplier_material = true 
+                        OR supplier_processing = true 
+                        OR supplier_service = true
+                    )
+                    AND write_date > CURRENT_TIMESTAMP - INTERVAL '{TIME_INTERVAL}' 
             LIMIT {QUERY_LIMIT}
         """
         
@@ -89,6 +86,7 @@ def main():
         }
         
         logger.info("开始写入供应商资料到MES系统")
+        logger.info(f"发送供应商数据: {list_value}")
         response = requests.post(url, headers=headers, json=list_value, timeout=60)
         response.raise_for_status()  # 检查HTTP错误
 
@@ -99,6 +97,13 @@ def main():
         logger.error(f"API请求失败: {e}")
     except Exception as e:
         logger.error(f"处理过程中发生错误: {e}")
+    finally:
+        # 确保数据库连接关闭
+        if db:
+            try:
+                db.close()
+            except Exception as e:
+                logger.error(f"关闭数据库连接时发生错误: {e}")
 
 if __name__ == "__main__":
     main()

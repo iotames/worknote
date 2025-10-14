@@ -14,6 +14,7 @@ def extract_single_weight(weight_str):
         return float(match.group(1))
     return None
 
+# 获取产品BOM信息
 def get_product_bom(db, res_id , res_name):
     # 2.1 查询款式BOM
     query_bom = """
@@ -37,7 +38,6 @@ def get_product_bom(db, res_id , res_name):
                             public.ziyi_base_parts i on i.id = a.parts_id
                     WHERE   a.active = true and b.active = true and 
                             b.id = %s and d.code in ('B','F')
-                            --a.write_date > CURRENT_TIMESTAMP - INTERVAL '6 HOURS' 
                     order by d.id , a.sequence , a.id 
                     LIMIT 30
                 """

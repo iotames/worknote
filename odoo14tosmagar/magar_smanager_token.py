@@ -7,7 +7,7 @@ from get_conf import Config
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("magar_smanager_token")
 
 class MES_Get_token:
     def __init__(self, base_url, app_key, app_secret):
