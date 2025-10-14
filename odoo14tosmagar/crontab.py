@@ -25,7 +25,8 @@ SCRIPTS_TO_EXECUTE = [
     "magar_smanager_token.py",
     # 依赖token的其他脚本
     "magar_saveBaCustomer.py",
-    "magar_saveBaProvider.py"
+    "magar_saveBaProvider.py",
+    "magar_batchSaveBaMate.py"
 ]
 
 def run_script(script_name):

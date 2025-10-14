@@ -2,8 +2,7 @@ import requests
 import re
 import logging
 from get_conf import Config
-from magar_smanager_token import MES_Get_token
-from odoo_db_con import PostgreSQLConnector
+from odoo_db_con import get_db_connection
 from funcs import get_product_bom, extract_single_weight
 
 # 配置日志
@@ -26,14 +25,8 @@ def main():
         config = Config()
         baseURL = config.baseURL
         str_token = config.token
-        
-        # 数据库配置
-        host = config.host
-        port = config.port
-        database = config.database
-        username = config.username
-        password = config.password
-        
+        TIME_INTERVAL = config.timeinterval
+
     except FileNotFoundError as e:
         logger.error(f"配置文件错误: {e}")
         return
@@ -44,7 +37,7 @@ def main():
     try:
             
         # 获取数据库连接
-        db = PostgreSQLConnector(host, port, database, username, password)
+        db = get_db_connection(config)  
         logger.info("开始查询款式资料")
         
         # 构造查询语句
@@ -61,7 +54,8 @@ def main():
                             ziyi_base_style g on g.id = a.style_id left join
                             ziyi_base_season_batch h on h.id = a.season_batch_id
                     WHERE   a.active = true and
-                            a.write_date > CURRENT_TIMESTAMP - INTERVAL '{TIME_INTERVAL}' LIMIT {QUERY_LIMIT}
+                            a.write_date > CURRENT_TIMESTAMP - INTERVAL '{TIME_INTERVAL}' 
+                    LIMIT {QUERY_LIMIT}
         """
         
         results = db.execute_query(query)

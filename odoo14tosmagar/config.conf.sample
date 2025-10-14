@@ -12,3 +12,6 @@ password = postgres
 
 [Token]
 token = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+[TIME_INTERVAL]
+timeinterval = xx HOURS

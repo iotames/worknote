@@ -3,6 +3,12 @@ from psycopg2 import sql
 from psycopg2.extras import RealDictCursor
 import configparser
 import os
+import logging
+logger = logging.getLogger(__name__)
+
+# 配置日志
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("odoo_db_con")
 
 
 class PostgreSQLConnector:
@@ -16,21 +22,6 @@ class PostgreSQLConnector:
         self.password = password
         self._connect()
     
-    # def _load_config(self):
-    #     """加载配置文件"""
-    #     # if not os.path.exists(self.config_file):
-    #     #     self._create_sample_config()
-    #     #     raise FileNotFoundError(f"配置文件 {self.config_file} 不存在，已创建示例配置文件")
-        
-    #     config = configparser.ConfigParser()
-    #     config.read(self.config_file, encoding='utf-8')
-        
-    #     self.host = config.get('POSTGRESQL', 'host', fallback='localhost')
-    #     self.port = config.getint('POSTGRESQL', 'port', fallback=5432)
-    #     self.database = config.get('POSTGRESQL', 'dbname', fallback='postgres')
-    #     self.username = config.get('POSTGRESQL', 'dbuser', fallback='postgres')
-    #     self.password = config.get('POSTGRESQL', 'dbpassword', fallback='password')
-    
     def _connect(self):
         """连接PostgreSQL数据库"""
         try:
@@ -43,12 +34,12 @@ class PostgreSQLConnector:
                 cursor_factory=RealDictCursor  # 返回字典格式的结果
             )
             self.cursor = self.connection.cursor()
-            print(f"成功连接到PostgreSQL数据库: {self.database}")
+            logger.info(f"成功连接到PostgreSQL数据库: {self.database}")
             
             # 测试连接
             self.cursor.execute("SELECT version();")
             version = self.cursor.fetchone()
-            print(f"PostgreSQL版本: {version['version']}")
+            logger.info(f"PostgreSQL版本: {version['version']}")
             
         except Exception as e:
             raise Exception(f"连接PostgreSQL失败: {e}")
@@ -59,7 +50,7 @@ class PostgreSQLConnector:
             self.cursor.execute(query, params)
             return self.cursor.fetchall()
         except Exception as e:
-            print(f"查询执行失败: {e}")
+            logger.error(f"查询执行失败: {e}")
             self.connection.rollback()
             return None
     
@@ -69,7 +60,7 @@ class PostgreSQLConnector:
             self.cursor.close()
         if self.connection:
             self.connection.close()
-        print("数据库连接已关闭")
+        logger.info("数据库连接已关闭")
     
     def __enter__(self):
         return self
@@ -77,29 +68,29 @@ class PostgreSQLConnector:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-# def main():
-#     """主函数示例"""
-#     try:
-#         # 连接PostgreSQL
-#         db = PostgreSQLConnector()
-
-#         return db
-           
-#         # print("\n查询 - 用户信息:")
-#         # query = """
-#         # SELECT u.id
-#         # FROM res_users u
-#         # LIMIT 5;
-#         # """
-#         # users = db.execute_query(query)
-#         # for user in users:
-#         #     print(f"用户: {user['id']}")
-
-#     except Exception as e:
-#         print(f"错误: {e}")
-#     finally:
-#         if 'db' in locals():
-#             db.close()
-
-# if __name__ == "__main__":
-#     main()
+# 获取数据库连接
+def get_db_connection(config):
+    """根据配置获取数据库连接
+    
+    Args:
+        config: Config对象，包含数据库连接配置
+        
+    Returns:
+        PostgreSQLConnector: 数据库连接实例
+    
+    Raises:
+        Exception: 当无法建立数据库连接时抛出异常
+    """
+    try:
+        # 从配置中获取数据库参数
+        host = config.host
+        port = config.port
+        database = config.database
+        username = config.username
+        password = config.password
+        
+        # 创建并返回数据库连接
+        db = PostgreSQLConnector(host, port, database, username, password)
+        return db
+    except Exception as e:
+        raise Exception(f"建立数据库连接失败: {str(e)}")

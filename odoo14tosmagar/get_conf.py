@@ -46,6 +46,9 @@ class Config:
             self.token = self.config.get('Token', 'token')
         else:
             self.token = None
+
+        # 时间间隔配置
+        self.timeinterval = self.config.get('TIME_INTERVAL', 'timeinterval')
     
     def get(self, section, key, default=None):
         """获取配置项"""
