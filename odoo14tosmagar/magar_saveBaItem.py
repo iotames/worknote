@@ -7,7 +7,7 @@ from funcs import get_product_bom, extract_single_weight
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("magar_saveBaItem")
 
 # 常量定义
 TIME_INTERVAL = '6 HOURS'
@@ -54,9 +54,10 @@ def main():
                             ziyi_base_style g on g.id = a.style_id left join
                             ziyi_base_season_batch h on h.id = a.season_batch_id
                     WHERE   a.active = true and
+                            a.id = 3 and 
                             a.write_date > CURRENT_TIMESTAMP - INTERVAL '{TIME_INTERVAL}' 
                     LIMIT {QUERY_LIMIT}
-        """
+                """
         
         results = db.execute_query(query)
         
@@ -161,7 +162,7 @@ def process_single_item(db, baseURL, str_token, res):
             'sizeList': size_list,          #款式尺码列表
         }
         
-        logger.debug(f"准备的款式数据: {item_data}")
+        logger.info(f"准备的款式数据: {item_data}")
         
         # 写入mes接口
         url = f"{baseURL}{API_ITEM_ENDPOINT}"
@@ -171,6 +172,7 @@ def process_single_item(db, baseURL, str_token, res):
         }
         
         logger.info(f"开始写入款式资料: {res['design_no']}")
+        logger.info(f"准备的款式数据: {item_data}")
         response = requests.post(url, headers=headers, json=item_data, timeout=60)
         response.raise_for_status()
         
@@ -206,7 +208,11 @@ def process_item_bom(db, baseURL, str_token, res):
                 fabricBOMList.append(material_json)
             elif material_type == 'F':  # 辅料
                 accessoryBOMList.append(material_json)
-                
+
+        if not fabricBOMList or not accessoryBOMList:
+            # 没有面料或辅料，不写入BOM
+            logger.info(f"款号 {res['design_no']} BOM中没有面料或辅料！不写入BOM")
+            return 
         # 写入mes接口款式BOM
         json_bom = {
             'itemCode': res['design_no'],
@@ -221,6 +227,7 @@ def process_item_bom(db, baseURL, str_token, res):
         }
         
         logger.info(f"开始写入款式BOM: {res['design_no']}")
+        logger.info(f"准备的款式BOM数据: {json_bom}")
         response_bom = requests.post(url_bom, headers=headers, json=json_bom, timeout=60)
         response_bom.raise_for_status()
         
@@ -238,12 +245,16 @@ def process_single_bom_material(db, res_bom):
 
     # 1. 物料规格
     query_bom_spec = """ 
-                    select  base_size.name, base_size.code, bom_size.value, bom.quantity
-                    from    public.ziyi_product_bom_size bom_size inner join
-                            public.ziyi_base_size base_size on base_size.id = bom_size.size_id inner join
-                            public.ziyi_product_bom bom on bom.id = bom_size.parent_id
-                    where   bom.id = %s
-                    order by parent_id asc, base_size.sequence asc
+                    select  t.id , t.value , t.quantity , b.name  
+                    from	(
+                                select  bom.id , bom.quantity , COALESCE(a.size_id , pz.size_id) as size_id , COALESCE(a.value , bom.common_spec) as value
+                                from	public.ziyi_product_bom bom inner join 
+                                        public.ziyi_relation_product_size pz on pz.product_id = bom.product_id left join 
+                                        public.ziyi_product_bom_size a on bom.id = a.parent_id 
+                                where 	bom.id = %s
+                            ) t 
+                            inner join public.ziyi_base_size b on b.id = t.size_id 
+                    order by t.id asc, b.sequence asc
                     """
     results_bom_spec = db.execute_query(query_bom_spec, [res_bom['bom_id']])
     dis_specList = []
@@ -257,21 +268,28 @@ def process_single_bom_material(db, res_bom):
             'qty': str(res_bom_spec['quantity'])
         }
         matesizelist.append(spec_json)
-        
+        # 写入规格
         if res_bom_spec['value'] not in dis_specList:
             dis_specList.append(res_bom_spec['value'])
         
         if not bom_size_value:
             bom_size_value = res_bom_spec['value']
-
+    # 如果没有规格则取通配规格
+    # logger.info(f"物料规格: {dis_specList}")
     # 2. 物料颜色
-    query_bom_color = """ 
-                    select  b.name as itemcolorname, b.code as itemcolorcode, c.name as colorname, c.code as colorcode, a.value
-                    from    ziyi_product_bom_color a inner join
-                            ziyi_base_color b on b.id = a.color_id inner join
-                            ziyi_base_color c on c.id = a.value
-                    where   parent_id = %s
-                    order by a.id asc
+    query_bom_color = """                     
+                        select  t.id , b.name as itemcolorname, b.code as itemcolorcode, c.name as colorname, c.code as colorcode , t.value
+                        from	(
+                                    select  bom.id , COALESCE(a.color_id , pc.color_id) as color_id , COALESCE(a.value , bom.common_color) as value
+                                    from	public.ziyi_product_bom bom inner join 
+                                            public.ziyi_relation_product_color pc on pc.product_id = bom.product_id left join 
+                                            public.ziyi_product_bom_color a on bom.id = a.parent_id 
+                                    where 	bom.product_id = 3
+                                ) t 
+                                inner join public.ziyi_base_color b on b.id = t.color_id 
+                                inner join public.ziyi_base_color c on c.id = t.value
+                        WHERE   t.id = %s
+                        order by t.id asc 
                     """
     results_bom_color = db.execute_query(query_bom_color, [res_bom['bom_id']])
     

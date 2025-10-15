@@ -87,16 +87,31 @@ def main():
         
         logger.info("开始写入供应商资料到MES系统")
         logger.info(f"发送供应商数据: {list_value}")
-        response = requests.post(url, headers=headers, json=list_value, timeout=60)
-        response.raise_for_status()  # 检查HTTP错误
-
-        logger.info(f"API响应: {response.json()}")
-        logger.info("供应商资料写入完成")
-        
-    except requests.exceptions.RequestException as e:
-        logger.error(f"API请求失败: {e}")
-    except Exception as e:
-        logger.error(f"处理过程中发生错误: {e}")
+        try:
+            response = requests.post(url, headers=headers, json=list_value, timeout=60)
+            
+            # 检查HTTP响应状态
+            if response.status_code != 200:
+                logger.error(f"API请求失败，状态码: {response.status_code}, 响应内容: {response.text}")
+                return
+            
+            # 尝试解析JSON响应
+            try:
+                response_data = response.json()
+                logger.info(f"API响应: {response_data}")
+            except json.JSONDecodeError:
+                logger.error(f"API返回非JSON格式响应: {response.text}")
+                
+            logger.info("供应商资料写入完成")
+            
+        except requests.exceptions.Timeout:
+            logger.error(f"API请求超时，URL: {url}")
+        except requests.exceptions.ConnectionError:
+            logger.error(f"API连接错误，URL: {url}")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"API请求失败: {e}")
+        except Exception as e:
+            logger.error(f"处理过程中发生错误: {e}")
     finally:
         # 确保数据库连接关闭
         if db:

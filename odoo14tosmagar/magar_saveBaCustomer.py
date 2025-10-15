@@ -1,4 +1,5 @@
 import time
+import json
 import logging
 import requests
 from get_conf import Config
@@ -90,16 +91,34 @@ def main():
         
         logger.info(f"开始写入客户资料到MES系统，API地址: {url}")
         logger.info(f"发送客户数据: {list_value}")
-        response = requests.post(url, headers=headers, json=list_value, timeout=60)  # 设置60秒超时
-        response.raise_for_status() # 检查HTTP响应状态
-        
-        logger.info(f"API响应: {response.json()}")
-        logger.info("客户资料写入完成")
+        try:
+            response = requests.post(url, headers=headers, json=list_value, timeout=60)
             
-    except requests.exceptions.RequestException as e:
-        logger.error(f"API请求失败: {e}")
-    except Exception as e:
-        logger.error(f"处理过程中发生错误: {e}")
+            # 检查HTTP响应状态
+            if response.status_code != 200:
+                logger.error(f"API请求失败，状态码: {response.status_code}, 响应内容: {response.text}")
+                # 可以选择抛出异常或直接返回
+                # raise requests.exceptions.HTTPError(f"API请求失败: {response.status_code}")
+                return
+            
+            # 尝试解析JSON响应
+            try:
+                response_data = response.json()
+                logger.info(f"API响应: {response_data}")
+            except json.JSONDecodeError:
+                logger.error(f"API返回非JSON格式响应: {response.text}")
+                
+            logger.info("客户资料写入完成")
+            
+        except requests.exceptions.Timeout:
+            logger.error(f"API请求超时，URL: {url}")
+        except requests.exceptions.ConnectionError:
+            logger.error(f"API连接错误，URL: {url}")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"API请求失败: {e}")
+        except Exception as e:
+            logger.error(f"处理过程中发生错误: {e}")
+            
     finally:
         # 确保数据库连接关闭
         if db:
