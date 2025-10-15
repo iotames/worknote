@@ -15,7 +15,7 @@ def extract_single_weight(weight_str):
     return None
 
 # 获取产品BOM信息
-def get_product_bom(db, res_id , res_name):
+def get_product_bom(db, res_id ):
     # 2.1 查询款式BOM
     query_bom = """
                     select  b.design_no , 
