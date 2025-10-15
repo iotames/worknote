@@ -9,10 +9,10 @@ import traceback
 logging.basicConfig(
     level=logging.DEBUG,  # 保持DEBUG级别以显示详细信息
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("odoo14tomagar.log"),
-        logging.StreamHandler()
-    ]
+    # handlers=[
+    #     logging.FileHandler("odoo14tomagar.log"),
+    #     logging.StreamHandler()
+    # ]
 )
 logger = logging.getLogger("odoo14tomagar")
 
@@ -26,7 +26,8 @@ SCRIPTS_TO_EXECUTE = [
     # 依赖token的其他脚本
     "magar_saveBaCustomer.py",
     "magar_saveBaProvider.py",
-    "magar_batchSaveBaMate.py"
+    "magar_batchSaveBaMate.py",
+    "magar_saveBaItem.py",
 ]
 
 def run_script(script_name):

@@ -12,7 +12,6 @@ logger = logging.getLogger("magar_saveBaItem")
 # 常量定义
 TIME_INTERVAL = '6 HOURS'
 QUERY_LIMIT = 500
-MAX_BOM_MATERIALS = 30
 API_ITEM_ENDPOINT = '/yzApi/saveBaItem'
 API_BOM_ENDPOINT = '/yzApi/saveBaItemBoms'
 
@@ -54,7 +53,6 @@ def main():
                             ziyi_base_style g on g.id = a.style_id left join
                             ziyi_base_season_batch h on h.id = a.season_batch_id
                     WHERE   a.active = true and
-                            a.id = 3 and 
                             a.write_date > CURRENT_TIMESTAMP - INTERVAL '{TIME_INTERVAL}' 
                     LIMIT {QUERY_LIMIT}
                 """
@@ -191,7 +189,7 @@ def process_item_bom(db, baseURL, str_token, res):
         logger.info(f"开始查询款式BOM: {res['design_no']}")
         
         # 获取物料BOM
-        results_bom = get_product_bom(db, res['product_id'], res['design_no'])
+        results_bom = get_product_bom(db, res['product_id'])
         
         if not results_bom:
             logger.warning(f"款号 {res['design_no']} 没有BOM资料！")
@@ -250,7 +248,7 @@ def process_single_bom_material(db, res_bom):
                                 select  bom.id , bom.quantity , COALESCE(a.size_id , pz.size_id) as size_id , COALESCE(a.value , bom.common_spec) as value
                                 from	public.ziyi_product_bom bom inner join 
                                         public.ziyi_relation_product_size pz on pz.product_id = bom.product_id left join 
-                                        public.ziyi_product_bom_size a on bom.id = a.parent_id 
+                                        public.ziyi_product_bom_size a on bom.id = a.parent_id and a.size_id = pz.size_id 
                                 where 	bom.id = %s
                             ) t 
                             inner join public.ziyi_base_size b on b.id = t.size_id 
@@ -284,11 +282,10 @@ def process_single_bom_material(db, res_bom):
                                     from	public.ziyi_product_bom bom inner join 
                                             public.ziyi_relation_product_color pc on pc.product_id = bom.product_id left join 
                                             public.ziyi_product_bom_color a on bom.id = a.parent_id 
-                                    where 	bom.product_id = 3
+                                    where 	bom.id = %s
                                 ) t 
                                 inner join public.ziyi_base_color b on b.id = t.color_id 
                                 inner join public.ziyi_base_color c on c.id = t.value
-                        WHERE   t.id = %s
                         order by t.id asc 
                     """
     results_bom_color = db.execute_query(query_bom_color, [res_bom['bom_id']])
