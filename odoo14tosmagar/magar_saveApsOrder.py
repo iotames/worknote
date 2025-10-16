@@ -229,7 +229,6 @@ def process_single_bom_material(db, res_bom):
                             inner join public.ziyi_base_size b on b.id = t.size_id 
                     order by t.id asc, b.sequence asc
                 '''
-    logger.info(f'bom_id: {res_bom["bom_id"]}')
     results_bom_spec = db.execute_query(query_bom_spec, [res_bom['bom_id']])       
     dis_specList = []
     bom_size_value = ""

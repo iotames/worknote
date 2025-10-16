@@ -149,7 +149,7 @@ def main():
                     'providerName': rec['supplier_name'],
                     'deliveryDate': rec['delivery_date'].strftime("%Y-%m-%d"),
                     'orderBillNO' : orderbillno,  # 生产订单号
-                    'deliveryType': '' , # 交货方式'??
+                    'deliveryType': '' , # 交货方式' 放空
                     'taxRate': str(rec['tax_rate']) if rec['tax_rate'] else '0.0', # 税率
                     'currency': rec['currency'], # 币种
                     'exchangeRate': str(rec['currency_rate']), # 汇率
