@@ -28,6 +28,8 @@ SCRIPTS_TO_EXECUTE = [
     "magar_saveBaProvider.py",
     "magar_batchSaveBaMate.py",
     "magar_saveBaItem.py",
+    "magar_saveApsOrder.py",
+    "magar_saveWmsPur.py",
 ]
 
 def run_script(script_name):
