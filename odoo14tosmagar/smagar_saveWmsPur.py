@@ -8,7 +8,7 @@ from funcs import extract_single_weight
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("magar_saveWmsPur")
+logger = logging.getLogger("smagar_saveWmsPur")
 
 # 常量定义
 COMPANY_ID = 2

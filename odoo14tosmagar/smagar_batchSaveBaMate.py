@@ -7,7 +7,7 @@ from odoo_db_con import get_db_connection
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("magar_batchSaveBaMate")
+logger = logging.getLogger("smagar_batchSaveBaMate")
 
 # 常量定义
 TIME_INTERVAL = '2 HOURS'
