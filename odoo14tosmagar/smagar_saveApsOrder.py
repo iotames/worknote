@@ -80,6 +80,8 @@ def process_orders(db, time_interval):
                             group by line_id 
                         ) as g on g.line_id = c.id
                 where   c.write_date > CURRENT_TIMESTAMP - INTERVAL '{time_interval}' 
+                        and a.active = true 
+                        and b.active = true
                 order by a.id asc
                 limit {QUERY_LIMIT}
             """
@@ -161,7 +163,8 @@ def process_single_order(db, res):
             'creater': res['creater'],  # 创建人
             'state': 1,  # 状态 (0:未审核；1:已审核；2，已作废；3，已结案) 默认1
             'itemCode': res['itemcode'],  # 款号(必填)
-            'itemList': itemList  # 订单明细(必填)
+            'itemList': itemList ,  # 订单明细(必填)
+            'fillDate': res['create_date'].strftime("%Y-%m-%d"),  # 开单日期(yyyy-MM-dd) 先取创建时间吧
         }
 
         # 订单BOM
