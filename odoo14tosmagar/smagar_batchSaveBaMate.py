@@ -47,7 +47,7 @@ def main():
                             case when a.active then '1' else '0' end as state , 
                             c.name as unit ,
                             a.composition ,
-                            d.code as categorycode,
+                            d.full_code as categorycode,
                             d.name as categoryname , 
                             e.code as supplier_code,
                             e.name as supplier_name

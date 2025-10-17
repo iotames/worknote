@@ -27,7 +27,7 @@ def main():
         config = Config()
         baseURL = config.baseURL
         str_token = config.token
-        TIME_INTERVAL = config.time_interval
+        TIME_INTERVAL = config.timeinterval
         
         logger.info("配置信息加载成功")
         logger.debug(f"baseURL: {baseURL}")
@@ -155,7 +155,7 @@ def main():
                     'exchangeRate': str(rec['currency_rate']), # 汇率
                     'creater':  rec['creater'], # 创建人(admin)
                     'checkTime' : rec['create_date'].strftime("%Y-%m-%d"), # 审核日期 (yyyy-MM-dd HH:mm:ss)????
-                    'linkName': rec['represent'], # 联系人
+                    # 'linkName': rec['represent'], # 联系人 同供应商档案，不传了 ,如果取法人，可能太长了。
                     'linkTel' : rec['phone'], # 联系电话
                     'state':1, # 状态 (状态：0:未审核；1:已审核；2，已作废；3，已结案)  默认为1
                     'wmsPurListList': wms_pur_list
