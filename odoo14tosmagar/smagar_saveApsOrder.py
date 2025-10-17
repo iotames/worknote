@@ -80,6 +80,8 @@ def process_orders(db, time_interval):
                             group by line_id 
                         ) as g on g.line_id = c.id
                 where   c.write_date > CURRENT_TIMESTAMP - INTERVAL '{time_interval}' 
+                        and a.active = true 
+                        and b.active = true
                 order by a.id asc
                 limit {QUERY_LIMIT}
             """

@@ -22,14 +22,14 @@ sCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 # 配置：要执行的脚本列表（按顺序）
 SCRIPTS_TO_EXECUTE = [
     # 必须先执行的token脚本
-    "magar_smanager_token.py",
+    "smagar_smanager_token.py",
     # 依赖token的其他脚本
-    "magar_saveBaCustomer.py",
-    "magar_saveBaProvider.py",
-    "magar_batchSaveBaMate.py",
-    "magar_saveBaItem.py",
-    "magar_saveApsOrder.py",
-    "magar_saveWmsPur.py",
+    "smagar_saveBaCustomer.py",
+    "smagar_saveBaProvider.py",
+    "smagar_batchSaveBaMate.py",
+    "smagar_saveBaItem.py",
+    "smagar_saveApsOrder.py",
+    "smagar_saveWmsPur.py",
 ]
 
 def run_script(script_name):
